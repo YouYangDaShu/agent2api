@@ -672,6 +672,18 @@ mod tests {
         assert_eq!(resolve_rounds(None, Some(1)), 1);
     }
 
+    #[test]
+    fn report_refresh_defaults_to_thirty_seconds_and_keeps_explicit_interval() {
+        let defaults = scheduled_from(&Map::new());
+        assert_eq!(defaults.report_auto_refresh.interval, 30);
+
+        let configured = map_of(&[(
+            KEY_SCHEDULED_TASKS,
+            json!({ "reportAutoRefresh": { "enabled": true, "interval": 1 } }),
+        )]);
+        assert_eq!(scheduled_from(&configured).report_auto_refresh.interval, 1);
+    }
+
     /// 整条链的形状：`*_from(&map)` 必须与纯函数那一层给出同一个答案。
     ///
     /// 钉住的写歪：`auto_continue_rounds_from` 里把范围常量写歪（例如上限用了
